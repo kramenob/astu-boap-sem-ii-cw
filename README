@@ -1,1 +1,172 @@
 # ASTU . BOAP . SEM-II . Course Work repo
+
+General
+
+Show help
+
+docfill --help
+
+Show application description, version, author information and command list.
+
+Show version
+
+docfill --version
+
+Display application version.
+
+---
+
+Database Commands
+
+Initialize example database
+
+docfill db init
+
+Create application database with example schema and demo data.
+
+Initialize custom schema
+
+docfill db schema create \
+    --table persons \
+    --schema schema.json
+
+Create user-defined table schema.
+
+Show schema
+
+docfill db schema show
+
+Display current database schema.
+
+Drop database
+
+docfill db reset
+
+Delete all tables and recreate the database.
+
+---
+
+Person / Record Commands
+
+List records
+
+docfill data list
+
+Show all records.
+
+View record
+
+docfill data show --id 1
+
+Display a single record.
+
+Add record
+
+docfill data add
+
+Create a new record interactively.
+
+Import record
+
+docfill data import person.json
+
+Import records from file.
+
+Update record
+
+docfill data update --id 1
+
+Modify record fields.
+
+Delete record
+
+docfill data delete --id 1
+
+Remove record.
+
+---
+
+Template Commands
+
+List templates
+
+docfill template list
+
+Show available templates.
+
+Show template
+
+docfill template show invitation
+
+Display template contents.
+
+Add template
+
+docfill template add invitation.docx
+
+Register a new template.
+
+Remove template
+
+docfill template delete invitation
+
+Delete template.
+
+---
+
+Document Generation
+
+Generate document
+
+docfill generate \
+    --template invitation \
+    --id 1
+
+Generate document for selected person.
+
+Generate all documents
+
+docfill generate \
+    --template invitation \
+    --all
+
+Generate documents for all records.
+
+Output directory
+
+docfill generate \
+    --template invitation \
+    --id 1 \
+    --output ./generated
+
+Specify custom output directory.
+
+---
+
+Supported Template Formats
+
+* TXT
+* Markdown (MD)
+* DOCX
+* XLS
+* XLSX
+
+Planned support:
+
+* PDF import
+* ODT
+* HTML
+
+---
+
+Examples
+
+docfill db init
+docfill data list
+docfill generate \
+    --template invitation \
+    --id 3
+docfill generate \
+    --template report \
+    --all
+

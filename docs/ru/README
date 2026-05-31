@@ -1,0 +1,210 @@
+# ASTU . BOAP . SEM-II . Course Work repo
+
+# General / Общие сведения
+
+Show help  
+Показать справку
+
+docfill --help
+
+Show application description, version, author information and command list.  
+Показать описание приложения, версию, информацию об авторе и список команд.
+
+Show version  
+Показать версию приложения
+
+docfill --version
+
+Display application version.  
+Показать версию приложения
+
+---
+
+# Database Commands / Команды базы данных
+
+Initialize example database  
+Инициализировать пример базы данных
+
+docfill db init
+
+Create application database with example schema and demo data.  
+Создать базу данных с примером схемы и тестовыми данными
+
+Initialize custom schema  
+Инициализировать пользовательскую схему
+
+docfill db schema create \
+    --table persons \
+    --schema schema.json
+
+Create user-defined table schema.  
+Создать пользовательскую схему таблицы.
+
+Show schema  
+Показать схему
+
+docfill db schema show
+
+Display current database schema.  
+Показать текущую схему базы данных.
+
+Drop database  
+Сбросить базу данных
+
+docfill db reset
+
+Delete all tables and recreate the database.  
+Удалить все таблицы и пересоздать базу данных.
+
+---
+
+# Person / Record Commands / Команды работы с людьми и записями
+
+List records  
+Показать все записи
+
+docfill data list
+
+Show all records.  
+Показать все записи
+
+View record  
+Показать запись
+
+docfill data show --id 1
+
+Display a single record.  
+Показать одну запись
+
+Add record  
+Добавить запись
+
+docfill data add
+
+Create a new record interactively.  
+Создать новую запись в интерактивном режиме
+
+Import record  
+Импортировать запись
+
+docfill data import person.json
+
+Import records from file.  
+Импортировать записи из файла.
+
+Update record  
+Обновить запись
+
+docfill data update --id 1
+
+Modify record fields.  
+Изменить поля записи
+
+Delete record  
+Удалить запись
+
+docfill data delete --id 1
+
+Remove record.  
+Удалить запись
+
+---
+
+# Template Commands / Команды шаблонов
+
+List templates  
+Показать доступные шаблоны
+
+docfill template list
+
+Show available templates.  
+Показать доступные шаблоны
+
+Show template  
+Показать шаблон
+
+docfill template show invitation
+
+Display template contents.  
+Показать содержимое шаблона
+
+Add template  
+Добавить шаблон
+
+docfill template add invitation.docx
+
+Register a new template.  
+Зарегистрировать новый шаблон
+
+Remove template  
+Удалить шаблон
+
+docfill template delete invitation
+
+Delete template.  
+Удалить шаблон
+
+---
+
+# Document Generation / Генерация документов
+
+Generate document  
+Сгенерировать документ
+
+docfill generate \
+    --template invitation \
+    --id 1
+
+Generate document for selected person.  
+Сгенерировать документ для выбранного человека
+
+Generate all documents  
+Сгенерировать все документы
+
+docfill generate \
+    --template invitation \
+    --all
+
+Generate documents for all records.  
+Сгенерировать документы для всех записей
+
+Output directory  
+Папка вывода
+
+docfill generate \
+    --template invitation \
+    --id 1 \
+    --output ./generated
+
+Specify custom output directory.  
+Указать пользовательскую папку вывода
+
+---
+
+# Supported Template Formats / Поддерживаемые форматы шаблонов
+
+* TXT
+* Markdown (MD)
+* DOCX
+* XLS
+* XLSX
+
+Planned support:  
+Планируется поддержка:
+
+* PDF import
+* ODT
+* HTML
+
+---
+
+# Examples / Примеры
+
+docfill db init
+docfill data list
+docfill generate \
+    --template invitation \
+    --id 3
+docfill generate \
+    --template report \
+    --all

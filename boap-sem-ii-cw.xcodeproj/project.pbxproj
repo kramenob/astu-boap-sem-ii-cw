@@ -23,9 +23,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		CEDD44E02FBD850200FE91F1 /* boap-sem-ii-cw */ = {
+		CEDD44E02FBD850200FE91F1 /* src */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "boap-sem-ii-cw";
+			path = src;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -44,7 +44,7 @@
 		CEDD44D52FBD850200FE91F1 = {
 			isa = PBXGroup;
 			children = (
-				CEDD44E02FBD850200FE91F1 /* boap-sem-ii-cw */,
+				CEDD44E02FBD850200FE91F1 /* src */,
 				CEDD44DF2FBD850200FE91F1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -73,7 +73,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				CEDD44E02FBD850200FE91F1 /* boap-sem-ii-cw */,
+				CEDD44E02FBD850200FE91F1 /* src */,
 			);
 			name = "boap-sem-ii-cw";
 			packageProductDependencies = (

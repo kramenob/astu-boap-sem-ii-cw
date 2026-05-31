@@ -1,0 +1,7 @@
+
+# Sensitive files
+.env
+
+# Builds
+output/
+build/
