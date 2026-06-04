@@ -5,8 +5,8 @@
 
 class TemplateEngine {
 public:
-    static std::string replacePlaceholders(
-        const std::string& text,
+    std::string render(
+        const std::string& templateName,
         const std::unordered_map<std::string, std::string>& values
     );
 };

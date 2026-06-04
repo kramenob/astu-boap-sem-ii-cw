@@ -2,17 +2,31 @@
 
 #include "../models/Person.h"
 #include <string>
+#include <vector>
 
 class Database {
-	public:
-		Database(const std::string& dbPath);
-		~Database();
+public:
+    Database(const std::string& dbPath);
+    Database();
 
-		void init();
-		void touchUpdatedAt(int id);
-		Person getPersonById(int id);
+    void init();
+    void init(const std::string& templateName);
 
-	private:
-		std::string dbPath;
-		void* db; // sqlite3*
+    void touchUpdatedAt(int id);
+    void reset();
+
+    Person getPersonById(int id);
+
+    std::vector<std::string> listTables();
+    bool dropTable(const std::string& tableName);
+    bool dropAllTables();
+    bool initFromSchema(const std::string& schemaPath);
+    std::string showSchema(const std::string& tableName);
+
+	std::string resolveTemplatePath(const std::string& templateName);
+	bool executeSqlFile(const std::string& path);
+
+private:
+    std::string dbPath;
+    void* db;
 };

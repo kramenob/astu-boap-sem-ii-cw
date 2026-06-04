@@ -1,86 +1,122 @@
 # ASTU . BOAP . SEM-II . Course Work repo
 
-General
+## General
 
-Show help
+### Show help
 
-docfill --help
+```sh
+markforge --help
+```
 
 Show application description, version, author information and command list.
 
-Show version
+### Show version
 
-docfill --version
+```sh
+markforge --version
+```
 
 Display application version.
 
 ---
 
-Database Commands
+## Database Commands
 
-Initialize example database
+### Initialize example database
 
-docfill db init
+```sh
+markforge db --init
+```
+
+```sh
+markforge db --init --template <employees|students|patients>
+```
 
 Create application database with example schema and demo data.
 
-Initialize custom schema
+```sh
+markforge db --drop <table_name>
+```
 
-docfill db schema create \
+```sh
+markforge db --list
+```
+
+### Initialize custom schema
+
+```sh
+markforge db --schema-create \
     --table persons \
-    --schema schema.json
+    --schema schema.<json|yml|sql>
+```
 
 Create user-defined table schema.
 
-Show schema
+### Show schema
 
-docfill db schema show
+```sh
+markforge db --schema-show <table_name>
+```
 
 Display current database schema.
 
-Drop database
+Reset database
 
-docfill db reset
+```sh
+markforge db reset
+```
 
 Delete all tables and recreate the database.
 
 ---
 
-Person / Record Commands
+## Person / Record Commands
 
-List records
+### List records
 
-docfill data list
+```sh
+markforge data list
+```
 
 Show all records.
 
-View record
+### View record
 
-docfill data show --id 1
+```sh
+markforge data show --id 1
+```
 
 Display a single record.
 
 Add record
 
-docfill data add
+```sh
+markforge data add
+```
 
 Create a new record interactively.
 
 Import record
 
-docfill data import person.json
+```sh
+markforge data import person.<json|yml|sql>
+```
 
 Import records from file.
 
 Update record
 
-docfill data update --id 1
+```sh
+markforge data update --id 1
+```
 
 Modify record fields.
 
 Delete record
 
-docfill data delete --id 1
+```sh
+markforge data delete --id 1
+```
 
 Remove record.
 
@@ -90,25 +126,33 @@ Template Commands
 
 List templates
 
-docfill template list
+```sh
+markforge template list
+```
 
 Show available templates.
 
 Show template
 
-docfill template show invitation
+```sh
+markforge template show invitation
+```
 
 Display template contents.
 
 Add template
 
-docfill template add invitation.docx
+```sh
+markforge template add /path/to/invitation.docx
+```
 
 Register a new template.
 
 Remove template
 
-docfill template delete invitation
+```sh
+markforge template delete invitation
+```
 
 Delete template.
 
@@ -118,7 +162,10 @@ Document Generation
 
 Generate document
 
-docfill generate \
+```sh
+markforge generate \
+```
+
     --template invitation \
     --id 1
 
@@ -126,7 +173,10 @@ Generate document for selected person.
 
 Generate all documents
 
-docfill generate \
+```sh
+markforge generate \
+```
+
     --template invitation \
     --all
 
@@ -134,7 +184,10 @@ Generate documents for all records.
 
 Output directory
 
-docfill generate \
+```sh
+markforge generate \
+```
+
     --template invitation \
     --id 1 \
     --output ./generated
@@ -161,12 +214,24 @@ Planned support:
 
 Examples
 
-docfill db init
-docfill data list
-docfill generate \
+```sh
+markforge db init
+```
+
+```sh
+markforge data list
+```
+
+```sh
+markforge generate \
+```
+
     --template invitation \
     --id 3
-docfill generate \
+```sh
+markforge generate \
+```
+
     --template report \
     --all
 

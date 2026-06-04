@@ -18,4 +18,4 @@ fi
 
 clang++ -std=c++17 $CPP_FILES -o "$BUILD_DIR/$APP_NAME"  -lsqlite3
 
-"$BUILD_DIR/$APP_NAME"
+"$BUILD_DIR/$APP_NAME" "$@"
