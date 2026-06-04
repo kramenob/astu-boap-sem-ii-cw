@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS teachers;
 
-CREATE TABLE employees (
+CREATE TABLE teachers (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
     last_name  TEXT,
     first_name TEXT,
@@ -16,7 +16,7 @@ CREATE TABLE employees (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO employees (
+INSERT INTO teachers (
 last_name, first_name, patronymic, age, gender, city, address, email, phone, role, department
 )
 VALUES

@@ -13,7 +13,7 @@
 #include "cli/commands/help/HelpCommand.h"
 #include "cli/Command.h"
 #include "cli/CommandRouter.h"
-#include "cli/GenerateCommand.h"
+#include "cli/commands/generate/GenerateCommand.h"
 #include "cli/commands/db/DbCommand.h"
 #include "cli/commands/data/DataCommand.h"
 #include "cli/commands/template/TemplateCommand.h"
