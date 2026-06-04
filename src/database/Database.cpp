@@ -175,6 +175,22 @@ std::vector<std::string> Database::listTables()
     return tables;
 }
 
+std::vector<std::string> Database::listUserTables()
+{
+    auto tables = listTables();
+
+    tables.erase(
+        std::remove(
+            tables.begin(),
+            tables.end(),
+            "sqlite_sequence"
+        ),
+        tables.end()
+    );
+
+    return tables;
+}
+
 bool Database::dropTable(const std::string& tableName)
 {
     std::string sql =
@@ -332,4 +348,71 @@ bool Database::executeSqlFile(const std::string& path)
     }
 
     return true;
+}
+
+std::vector<std::string> Database::getColumns(
+    const std::string& tableName)
+{
+    std::vector<std::string> columns;
+
+    std::string sql =
+        "PRAGMA table_info(" + tableName + ");";
+
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2((sqlite3*)db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        return columns;
+    }
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        const unsigned char* name = sqlite3_column_text(stmt, 1);
+
+        columns.push_back(
+            name
+                ? reinterpret_cast<const char*>(name)
+                : ""
+        );
+    }
+
+    sqlite3_finalize(stmt);
+
+    return columns;
+}
+
+std::vector<std::vector<std::string>> Database::getRows(
+    const std::string& tableName,
+    int limit)
+{
+    std::vector<std::vector<std::string>> rows;
+
+    std::string sql =
+        "SELECT * FROM " + tableName +
+        " LIMIT " + std::to_string(limit) + ";";
+
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2((sqlite3*)db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        return rows;
+    }
+
+    int columnCount = sqlite3_column_count(stmt);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        std::vector<std::string> row;
+
+        for (int i = 0; i < columnCount; ++i) {
+            const unsigned char* value = sqlite3_column_text(stmt, i);
+            row.push_back(
+                value
+                    ? reinterpret_cast<const char*>(value)
+                    : "NULL"
+            );
+        }
+
+        rows.push_back(row);
+    }
+
+    sqlite3_finalize(stmt);
+
+    return rows;
 }

@@ -1,5 +1,6 @@
 #pragma once
-#include "Command.h"
+
+#include "../../Command.h"
 
 class TemplateCommand : public Command {
 public:

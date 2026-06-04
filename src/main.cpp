@@ -15,7 +15,8 @@
 #include "cli/CommandRouter.h"
 #include "cli/GenerateCommand.h"
 #include "cli/commands/db/DbCommand.h"
-#include "cli/TemplateCommand.h"
+#include "cli/commands/data/DataCommand.h"
+#include "cli/commands/template/TemplateCommand.h"
 
 CommandContext parse(int argc, char** argv)
 {
@@ -24,11 +25,13 @@ CommandContext parse(int argc, char** argv)
     for (int i = 2; i < argc; ++i) {
         std::string arg = argv[i];
 
-        if (arg.rfind("--", 0) == 0) {
+        // support both --flag and -flag
+        if (arg.rfind("-", 0) == 0) {
             if (i + 1 < argc) {
                 std::string next = argv[i + 1];
 
-                if (next.rfind("--", 0) != 0) {
+                // next token is value if it is not another flag
+                if (next.rfind("-", 0) != 0) {
                     ctx.args[arg] = next;
                     ++i;
                     continue;
@@ -48,6 +51,7 @@ int main(int argc, char** argv)
 
     router.registerCommand("generate", std::make_unique<GenerateCommand>());
     router.registerCommand("db", std::make_unique<DbCommand>());
+    router.registerCommand("data", std::make_unique<DataCommand>());
     router.registerCommand("template", std::make_unique<TemplateCommand>());
 
 	router.registerCommand("help", std::make_unique<HelpCommand>());

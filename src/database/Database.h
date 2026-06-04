@@ -18,6 +18,14 @@ public:
     Person getPersonById(int id);
 
     std::vector<std::string> listTables();
+	std::vector<std::string> listUserTables();
+    std::vector<std::string> getColumns(
+        const std::string& tableName
+    );
+    std::vector<std::vector<std::string>> getRows(
+        const std::string& tableName,
+        int limit = 5
+    );
     bool dropTable(const std::string& tableName);
     bool dropAllTables();
     bool initFromSchema(const std::string& schemaPath);

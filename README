@@ -4,19 +4,19 @@
 
 ### Show help
 
+Show application description, version, author information and command list.
+
 ```sh
 markforge --help
 ```
 
-Show application description, version, author information and command list.
-
 ### Show version
+
+Display application version.
 
 ```sh
 markforge --version
 ```
-
-Display application version.
 
 ---
 
@@ -24,49 +24,55 @@ Display application version.
 
 ### Initialize example database
 
+Create table in interactive mode
+
 ```sh
 markforge db --init
 ```
 
+Show available table templates list
+
 ```sh
-markforge db --init --template <employees|students|patients>
+markforge db --init --templates
 ```
 
 Create application database with example schema and demo data.
 
 ```sh
+markforge db --init --template <employees|students|patients>
+```
+
+Delete table with `<table_name>`
+
+```sh
 markforge db --drop <table_name>
 ```
+
+Delete all tables
+
+```sh
+markforge db --drop --all
+```
+
+Show user created tables
 
 ```sh
 markforge db --list
 ```
 
-### Initialize custom schema
+Show all tables
 
 ```sh
-markforge db --schema-create \
-    --table persons \
-    --schema schema.<json|yml|sql>
+markforge db --list --all
 ```
 
-Create user-defined table schema.
-
 ### Show schema
+
+Display `<table_name>` database schema
 
 ```sh
 markforge db --schema-show <table_name>
 ```
-
-Display current database schema.
-
-Reset database
-
-```sh
-markforge db reset
-```
-
-Delete all tables and recreate the database.
 
 ---
 
@@ -74,123 +80,65 @@ Delete all tables and recreate the database.
 
 ### List records
 
-```sh
-markforge data list
-```
-
-Show all records.
-
-### View record
+Show all records in interactive mode:
 
 ```sh
-markforge data show --id 1
+markforge data --show
 ```
 
-Display a single record.
-
-Add record
+Show specific records in `<table_name>`:
 
 ```sh
-markforge data add
+markforge data --show <table_name>
 ```
-
-Create a new record interactively.
-
-Import record
-
-```sh
-markforge data import person.<json|yml|sql>
-```
-
-Import records from file.
-
-Update record
-
-```sh
-markforge data update --id 1
-```
-
-Modify record fields.
-
-Delete record
-
-```sh
-markforge data delete --id 1
-```
-
-Remove record.
 
 ---
 
-Template Commands
+## Template Commands
 
-List templates
+### List templates
 
-```sh
-markforge template list
-```
-
-Show available templates.
-
-Show template
+Show available templates:
 
 ```sh
-markforge template show invitation
+markforge template --list
 ```
 
-Display template contents.
-
-Add template
+Show template `<template_name>`:
 
 ```sh
-markforge template add /path/to/invitation.docx
+markforge template --show <template_name>
 ```
 
-Register a new template.
-
-Remove template
+Register template to use inline:
 
 ```sh
-markforge template delete invitation
+markforge template --add </path/to/><filename>.<txt|md|docx> -as <template_name>
 ```
 
-Delete template.
+Remove template:
+
+```sh
+markforge template --remove <template_name>
+```
 
 ---
 
-Document Generation
+## Document Generation
 
-Generate document
-
-```sh
-markforge generate \
-```
-
-    --template invitation \
-    --id 1
-
-Generate document for selected person.
-
-Generate all documents
+Generate document with `<template_name>` as template source
 
 ```sh
-markforge generate \
+markforge generate --source <table_name> --template <template_name>
 ```
-
-    --template invitation \
-    --all
 
 Generate documents for all records.
 
 Output directory
 
 ```sh
-markforge generate \
+markforge generate --source <table_name> --template <template_name> --output </path/to/output/>
 ```
-
-    --template invitation \
-    --id 1 \
-    --output ./generated
 
 Specify custom output directory.
 
