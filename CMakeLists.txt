@@ -10,13 +10,13 @@ file(GLOB_RECURSE SOURCES
     src/*.cpp
 )
 
-add_executable(boap_app ${SOURCES})
+add_executable(markforge ${SOURCES})
 
 # ---- SQLite ----
 find_package(SQLite3 REQUIRED)
-target_link_libraries(boap_app PRIVATE SQLite::SQLite3)
+target_link_libraries(markforge PRIVATE SQLite::SQLite3)
 
 # ---- Include dirs ----
-target_include_directories(boap_app PRIVATE
+target_include_directories(markforge PRIVATE
     ${CMAKE_SOURCE_DIR}/src
 )
