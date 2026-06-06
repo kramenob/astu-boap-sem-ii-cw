@@ -6,7 +6,7 @@
 
 ### Загрузка готовой сборки
 
-Вы можете скачать готовую сборку для вашей операционной системы с [GitHub Releases](/kramenob/markforge/releases).
+Вы можете скачать готовую сборку для вашей операционной системы с [GitHub Releases](https://github.com/kramenob/markforge/releases).
 
 ### Быстрый старт
 

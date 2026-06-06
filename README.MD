@@ -15,7 +15,7 @@ Supported platforms:
 
 ### Download a Release Build
 
-Download the latest binary from the project's [GitHub Releases](/kramenob/markforge/releases) page.
+Download the latest binary from the project's [GitHub Releases](https://github.com/kramenob/markforge/releases) page.
 
 ### Linux / macOS
 
