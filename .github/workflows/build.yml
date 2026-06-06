@@ -12,6 +12,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,13 +30,18 @@ jobs:
 
           if [ "$RUNNER_OS" = "macOS" ]; then
             brew install sqlite
+
+            SQLITE_PREFIX=$(brew --prefix sqlite)
+
+            echo "SQLite prefix: $SQLITE_PREFIX"
+            echo "SQLITE_PREFIX=$SQLITE_PREFIX" >> $GITHUB_ENV
           fi
 
       # ---------------- WINDOWS ----------------
       - name: Setup MSVC / Mingw
         if: matrix.os == 'windows-latest'
         run: |
-          choco install mingw -y
+          choco install mingw sqlite -y
 
       # ---------------- BUILD ----------------
       - name: Build project (Linux/macOS)
@@ -41,10 +49,19 @@ jobs:
         run: |
           mkdir -p build
 
-          g++ -std=c++17 \
-            src/**/*.cpp \
-            -o build/markforge \
-            -lsqlite3
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            g++ -std=c++17 \
+              -I${SQLITE_PREFIX}/include \
+              -L${SQLITE_PREFIX}/lib \
+              src/**/*.cpp \
+              -o build/markforge \
+              -lsqlite3
+          else
+            g++ -std=c++17 \
+              src/**/*.cpp \
+              -o build/markforge \
+              -lsqlite3
+          fi
 
       - name: Build project (Windows)
         if: matrix.os == 'windows-latest'
@@ -53,7 +70,8 @@ jobs:
 
           g++ -std=c++17 `
             (Get-ChildItem -Recurse -Filter *.cpp | ForEach-Object FullName) `
-            -o build/markforge.exe
+            -o build/markforge.exe `
+            -lsqlite3
 
       - name: Upload build
         uses: actions/upload-artifact@v4
