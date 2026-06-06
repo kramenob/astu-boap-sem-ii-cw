@@ -64,13 +64,19 @@ jobs:
         run: |
           mkdir build
 
-          choco install mingw sqlite -y
+          git clone https://github.com/microsoft/vcpkg.git
+          cd vcpkg
+          .\bootstrap-vcpkg.bat
+          .\vcpkg.exe install sqlite3:x64-windows
+
+          cd ..
 
           $FILES = Get-ChildItem -Recurse -Filter *.cpp | ForEach-Object FullName
 
-          g++ -std=c++17 $FILES `
-            -o build/markforge.exe `
-            -lsqlite3
+          $INCLUDE = "$PWD\vcpkg\installed\x64-windows\include"
+          $LIB = "$PWD\vcpkg\installed\x64-windows\lib\sqlite3.lib"
+
+          cl /std:c++17 /EHsc /I$INCLUDE $FILES /Fe:build\markforge.exe /link $LIB
 
       - name: Upload build
         uses: actions/upload-artifact@v4
