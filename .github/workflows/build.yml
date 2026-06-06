@@ -54,11 +54,8 @@ jobs:
         shell: pwsh
         run: |
           cmake -S . -B build `
-            -A x64 `
             -DCMAKE_TOOLCHAIN_FILE="$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+            -DVCPKG_TARGET_TRIPLET=x64-windows
 
       # ---------------- BUILD ----------------
       - name: Build project
