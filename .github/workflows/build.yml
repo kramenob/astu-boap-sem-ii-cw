@@ -4,9 +4,6 @@ on:
   push:
   pull_request:
 
-permissions:
-  contents: write
-
 jobs:
   build:
     strategy:
@@ -55,8 +52,7 @@ jobs:
         run: |
           cmake -S . -B build `
             -DCMAKE_TOOLCHAIN_FILE="$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows `
-            -DCMAKE_CONFIGURATION_TYPES=Release
+            -DVCPKG_TARGET_TRIPLET=x64-windows
 
       # ---------------- BUILD ----------------
       - name: Build project
@@ -67,32 +63,15 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           mkdir -p dist
-
-          exe=$(find build -type f -maxdepth 3 -perm -111 | head -n 1)
-
-          if [ -z "$exe" ]; then
-            echo "No executable found in build directory"
-            exit 1
-          fi
-
-          echo "Found binary: $exe"
-
-          out="dist/markforge-${{ runner.os }}-${{ runner.arch }}"
-
-          cp "$exe" "$out"
-          chmod +x "$out"
+          cp build/boap_app dist/boap-app-${{ runner.os }}-${{ runner.arch }} || true
+          chmod +x dist/* || true
 
       - name: Package artifacts (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           mkdir dist
-          $exe = Get-ChildItem -Path build -Recurse -Filter "*.exe" | Select-Object -First 1
-          if (-not $exe) {
-            Write-Error "No executable found"
-            exit 1
-          }
-          Copy-Item $exe.FullName dist\markforge-windows-x64.exe
+          copy build\Release\boap_app.exe dist\boap-app-windows-x64.exe
 
       - name: Upload build
         uses: actions/upload-artifact@v4
@@ -100,24 +79,13 @@ jobs:
           name: markforge-${{ matrix.os }}
           path: dist/
 
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
         with:
           tag_name: v${{ github.run_number }}
           name: Release v${{ github.run_number }}
           generate_release_notes: true
-          files: dist/**/*
+          files: dist/*
           draft: false
           prerelease: false
