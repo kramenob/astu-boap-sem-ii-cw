@@ -19,72 +19,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ---------------- LINUX / MAC ----------------
-      - name: Install dependencies (Linux/macOS)
-        if: matrix.os != 'windows-latest'
+      # ---------------- DEPENDENCIES ----------------
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
         run: |
-          if [ "$RUNNER_OS" = "Linux" ]; then
-            sudo apt-get update
-            sudo apt-get install -y g++ sqlite3 libsqlite3-dev
-          fi
+          sudo apt-get update
+          sudo apt-get install -y g++ cmake libsqlite3-dev
 
-          if [ "$RUNNER_OS" = "macOS" ]; then
-            brew install sqlite
-
-            SQLITE_PREFIX=$(brew --prefix sqlite)
-
-            echo "SQLite prefix: $SQLITE_PREFIX"
-            echo "SQLITE_PREFIX=$SQLITE_PREFIX" >> $GITHUB_ENV
-          fi
-
-      # ---------------- BUILD ----------------
-      - name: Build project (Linux/macOS)
-        if: matrix.os != 'windows-latest'
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
         run: |
-          mkdir -p build
+          brew install sqlite cmake
 
-          FILES=$(find src -name "*.cpp")
-
-          if [ "$RUNNER_OS" = "macOS" ]; then
-            g++ -std=c++17 \
-              -I${SQLITE_PREFIX}/include \
-              -L${SQLITE_PREFIX}/lib \
-              $FILES \
-              -o build/markforge \
-              -lsqlite3
-          else
-            g++ -std=c++17 \
-              $FILES \
-              -o build/markforge \
-              -lsqlite3
-          fi
-
-      - name: Build project (Windows)
-        if: matrix.os == 'windows-latest'
+      - name: Install dependencies (Windows - vcpkg)
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          mkdir build
-
           git clone https://github.com/microsoft/vcpkg.git
           cd vcpkg
           .\bootstrap-vcpkg.bat
           .\vcpkg.exe install sqlite3:x64-windows
 
-          cd ..
+      # ---------------- CONFIGURE ----------------
+      - name: Configure (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cmake -S . -B build
 
-          $FILES = (Get-ChildItem -Recurse -Filter *.cpp | ForEach-Object { '"' + $_.FullName + '"' }) -join ' '
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmake -S . -B build `
+            -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake `
+            -DVCPKG_TARGET_TRIPLET=x64-windows
 
-          $INCLUDE = "$PWD\vcpkg\installed\x64-windows\include"
-          $LIB = "$PWD\vcpkg\installed\x64-windows\lib\sqlite3.lib"
-
-          $VSDevCmd = "${env:ProgramFiles}\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
-
-          $Batch = @(
-            'call "' + $VSDevCmd + '"',
-            'cl /std:c++17 /EHsc /I"' + $INCLUDE + '" ' + $FILES + ' /Fe:build\markforge.exe /link "' + $LIB + '"'
-          )
-
-          Set-Content -Path build.bat -Value $Batch
-          cmd /c build.bat
+      # ---------------- BUILD ----------------
+      - name: Build project
+        run: cmake --build build --config Release
 
       - name: Upload build
         uses: actions/upload-artifact@v4
