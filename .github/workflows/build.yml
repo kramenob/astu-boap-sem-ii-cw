@@ -66,8 +66,20 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           mkdir -p dist
-          cp build/markforge dist/markforge-${{ runner.os }}-${{ runner.arch }} || true
-          chmod +x dist/* || true
+
+          exe=$(find build -type f -maxdepth 3 -perm -111 | head -n 1)
+
+          if [ -z "$exe" ]; then
+            echo "No executable found in build directory"
+            exit 1
+          fi
+
+          echo "Found binary: $exe"
+
+          out="dist/markforge-${{ runner.os }}-${{ runner.arch }}"
+
+          cp "$exe" "$out"
+          chmod +x "$out"
 
       - name: Package artifacts (Windows)
         if: runner.os == 'Windows'
