@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
@@ -38,7 +41,7 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git
           cd vcpkg
           .\bootstrap-vcpkg.bat
-          .\vcpkg.exe install sqlite3:x64-windows
+          .\vcpkg.exe install sqlite3:x64-windows-static
 
       # ---------------- CONFIGURE ----------------
       - name: Configure (Linux/macOS)
@@ -52,7 +55,7 @@ jobs:
         run: |
           cmake -S . -B build `
             -DCMAKE_TOOLCHAIN_FILE="$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static
 
       # ---------------- BUILD ----------------
       - name: Build project
