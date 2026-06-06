@@ -41,7 +41,7 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git
           cd vcpkg
           .\bootstrap-vcpkg.bat
-          .\vcpkg.exe install sqlite3:x64-windows-static
+          .\vcpkg.exe install sqlite3:x64-windows
 
       # ---------------- CONFIGURE ----------------
       - name: Configure (Linux/macOS)
@@ -55,7 +55,7 @@ jobs:
         run: |
           cmake -S . -B build `
             -DCMAKE_TOOLCHAIN_FILE="$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows-static
+            -DVCPKG_TARGET_TRIPLET=x64-windows
 
       # ---------------- BUILD ----------------
       - name: Build project
@@ -74,13 +74,19 @@ jobs:
         shell: pwsh
         run: |
           mkdir dist
-          copy build\markforge.exe dist\markforge-${{ runner.os }}-${{ runner.arch }}.exe
+          $exe = Get-ChildItem -Path build -Recurse -Filter "*.exe" | Select-Object -First 1
+          if (-not $exe) {
+            Write-Error "No executable found"
+            exit 1
+          }
+          Copy-Item $exe.FullName dist\markforge-windows-x64.exe
 
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
           name: markforge-${{ matrix.os }}
           path: dist/
+
 
   release:
     needs: build
