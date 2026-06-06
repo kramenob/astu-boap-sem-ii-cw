@@ -37,22 +37,6 @@ jobs:
             echo "SQLITE_PREFIX=$SQLITE_PREFIX" >> $GITHUB_ENV
           fi
 
-      # ---------------- WINDOWS ----------------
-      - name: Setup MSVC
-        if: matrix.os == 'windows-latest'
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Setup vcpkg
-        if: matrix.os == 'windows-latest'
-        uses: microsoft/setup-vcpkg@v4
-        with:
-          vcpkgRoot: ${{ github.workspace }}/vcpkg
-
-      - name: Install dependencies (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          vcpkg install sqlite3
-
       # ---------------- BUILD ----------------
       - name: Build project (Linux/macOS)
         if: matrix.os != 'windows-latest'
@@ -80,13 +64,13 @@ jobs:
         run: |
           mkdir build
 
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          choco install mingw sqlite -y
 
-          cl /std:c++17 /EHsc ^
-            /I%VCPKG_ROOT%\installed\x64-windows\include ^
-            src\database\Database.cpp src\main.cpp ^
-            /Fe:build\markforge.exe ^
-            %VCPKG_ROOT%\installed\x64-windows\lib\sqlite3.lib
+          $FILES = Get-ChildItem -Recurse -Filter *.cpp | ForEach-Object FullName
+
+          g++ -std=c++17 $FILES `
+            -o build/markforge.exe `
+            -lsqlite3
 
       - name: Upload build
         uses: actions/upload-artifact@v4
