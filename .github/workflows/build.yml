@@ -113,7 +113,7 @@ jobs:
         id: ver
         shell: bash
         run: |
-          CURR=$(grep -oE '#define[[:space:]]+APP_VERSION[[:space:]]+"?[0-9A-Za-z.]+"?' src/core/About.h | grep -oE '[0-9A-Za-z.]+')
+          CURR=$(grep -oE '#define[[:space:]]+VERSION[[:space:]]+"?[0-9A-Za-z.]+"?' src/core/About.h | grep -oE '[0-9A-Za-z.]+')
           PREV=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "v0.0.0")
 
           echo "curr=$CURR" >> $GITHUB_OUTPUT
