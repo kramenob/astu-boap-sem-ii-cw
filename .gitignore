@@ -6,6 +6,7 @@ EmbeddedSql.h
 # Builds
 output/
 build/
+boap-sem-ii-cw.xcodeproj/
 
 # temp
 temp/
