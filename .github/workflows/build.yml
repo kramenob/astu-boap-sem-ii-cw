@@ -113,11 +113,11 @@ jobs:
         id: ver
         shell: bash
         run: |
-          CURR=$(grep -oE '#define[[:space:]]+VERSION[[:space:]]+"?[0-9A-Za-z.]+"?' src/core/About.h | grep -oE '[0-9A-Za-z.]+')
+          CURR=$(awk -F'"' '/#define[[:space:]]+VERSION/ {print $2}' src/core/About.h)
           PREV=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "v0.0.0")
 
-          echo "curr=$CURR" >> $GITHUB_OUTPUT
-          echo "prev=$PREV" >> $GITHUB_OUTPUT
+          echo "curr=$CURR" >> "$GITHUB_OUTPUT"
+          echo "prev=$PREV" >> "$GITHUB_OUTPUT"
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
