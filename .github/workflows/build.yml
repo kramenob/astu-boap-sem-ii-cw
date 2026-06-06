@@ -66,7 +66,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           mkdir -p dist
-          cp build/boap_app dist/boap-app-${{ runner.os }}-${{ runner.arch }} || true
+          cp build/markforge dist/markforge-${{ runner.os }}-${{ runner.arch }} || true
           chmod +x dist/* || true
 
       - name: Package artifacts (Windows)
@@ -74,7 +74,7 @@ jobs:
         shell: pwsh
         run: |
           mkdir dist
-          copy build\Release\boap_app.exe dist\boap-app-windows-x64.exe
+          copy build\Release\markforge.exe dist\markforge-${{ runner.os }}-${{ runner.arch }}.exe
 
       - name: Upload build
         uses: actions/upload-artifact@v4
@@ -82,13 +82,23 @@ jobs:
           name: markforge-${{ matrix.os }}
           path: dist/
 
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: github.ref == 'refs/heads/main'
         with:
           tag_name: v${{ github.run_number }}
           name: Release v${{ github.run_number }}
           generate_release_notes: true
-          files: dist/*
+          files: dist/**/*
           draft: false
           prerelease: false
