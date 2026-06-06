@@ -15,7 +15,7 @@ Plateformes prises en charge :
 
 ### Télécharger une version prête à l'emploi
 
-Téléchargez la dernière version depuis la page des [GitHub Releases du projet](https://github.com/user/markforge/releases).
+Téléchargez la dernière version depuis la page des [GitHub Releases du projet](/kramenob/markforge/releases).
 
 ### Linux / macOS
 

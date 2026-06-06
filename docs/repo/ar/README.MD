@@ -17,7 +17,7 @@
 
 ### تنزيل إصدار جاهز
 
-قم بتنزيل أحدث إصدار من [صفحة GitHub Releases الخاصة بالمشروع](https://github.com/user/markforge/releases).
+قم بتنزيل أحدث إصدار من [صفحة GitHub Releases الخاصة بالمشروع](/kramenob/markforge/releases).
 
 ### Linux / macOS
 
