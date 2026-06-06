@@ -15,3 +15,4 @@ tmp/
 *.docx
 !base.docx
 src/resources
+*.bkp

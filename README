@@ -1,20 +1,91 @@
-# ASTU . BOAP . SEM-II . Course Work repo
+# MarkForge
 
-## General
+[English](README) | [Русский](docs/repo/ru/README.MD) | [العربية](docs/repo/ar/README.MD) | [Français](docs/repo/fr/README.MD)
 
-### Show help
+Cross-platform command-line application for database-driven document generation.
 
-Show application description, version, author information and command list.
+Supported platforms:
+- Windows x64
+- Linux x64
+- macOS (Intel and Apple Silicon)
 
-```sh
+---
+
+## Installation
+
+### Download a Release Build
+
+Download the latest binary from the project's GitHub Releases page.
+
+### Linux / macOS
+
+Make the binary executable:
+
+```bash
+chmod +x markforge
+```
+
+Run:
+
+```bash
+./markforge --help
+```
+
+### Windows
+
+Run from PowerShell or Command Prompt:
+
+```powershell
+.\markforge.exe --help
+```
+
+---
+
+## Quick Start
+
+Create a demo database:
+
+```bash
+markforge db --init --template students
+```
+
+List available tables:
+
+```bash
+markforge db --list
+```
+
+Show records:
+
+```bash
+markforge data --show students
+```
+
+Generate documents:
+
+```bash
+markforge generate --source students --template invitation
+```
+
+---
+
+# Command Reference
+
+## General Commands
+
+### Show Help
+
+Display application description, version information, and available commands.
+
+```bash
 markforge --help
 ```
 
-### Show version
+### Show Version
 
 Display application version.
 
-```sh
+```bash
 markforge --version
 ```
 
@@ -22,73 +93,79 @@ markforge --version
 
 ## Database Commands
 
-### Initialize example database
+### Initialize Database
 
-Create table in interactive mode
+Interactive initialization:
 
-```sh
+```bash
 markforge db --init
 ```
 
-Show available table templates list
+Show available templates:
 
-```sh
+```bash
 markforge db --init --templates
 ```
 
-Create application database with example schema and demo data.
+Create a database using a predefined template:
 
-```sh
-markforge db --init --template <employees|students>
+```bash
+markforge db --init --template employees
 ```
 
-Delete table with `<table_name>`
+```bash
+markforge db --init --template students
+```
 
-```sh
+### Remove Tables
+
+Remove a table:
+
+```bash
 markforge db --drop <table_name>
 ```
 
-Delete all tables
+Remove all tables:
 
-```sh
+```bash
 markforge db --drop --all
 ```
 
-Show user created tables
+### List Tables
 
-```sh
+User tables only:
+
+```bash
 markforge db --list
 ```
 
-Show all tables
+All tables:
 
-```sh
+```bash
 markforge db --list --all
 ```
 
-### Show schema
+### Show Table Schema
 
-Display `<table_name>` database schema
-
-```sh
+```bash
 markforge db --schema-show <table_name>
 ```
 
 ---
 
-## Person / Record Commands
+## Data Commands
 
-### List records
+### Show Records
 
-Show all records in interactive mode:
+Interactive mode:
 
-```sh
+```bash
 markforge data --show
 ```
 
-Show specific records in `<table_name>`:
+Show records from a specific table:
 
-```sh
+```bash
 markforge data --show <table_name>
 ```
 
@@ -96,29 +173,29 @@ markforge data --show <table_name>
 
 ## Template Commands
 
-### List templates
+### List Templates
 
-Show available templates:
-
-```sh
+```bash
 markforge template --list
 ```
 
-Show template `<template_name>`:
+### Show Template
 
-```sh
+```bash
 markforge template --show <template_name>
 ```
 
-Register template to use inline:
+### Register Template
 
-```sh
-markforge template --add </path/to/><filename>.<txt|md|docx> -as <template_name>
+TXT, Markdown, and DOCX templates can be registered for later use.
+
+```bash
+markforge template --add <path/to/template.docx> -as <template_name>
 ```
 
-Remove template:
+### Remove Template
 
-```sh
+```bash
 markforge template --remove <template_name>
 ```
 
@@ -126,60 +203,52 @@ markforge template --remove <template_name>
 
 ## Document Generation
 
-Generate document with `<template_name>` as template source
+Generate documents using a table as the data source and a registered template.
 
-```sh
+### Generate for Selected Records
+
+```bash
 markforge generate --source <table_name> --template <template_name>
 ```
 
-Generate documents for all records.
+### Custom Output Directory
 
-Output directory
-
-```sh
-markforge generate --source <table_name> --template <template_name> --output </path/to/output/>
+```bash
+markforge generate --source <table_name> --template <template_name> --output <path/to/output>
 ```
-
-Specify custom output directory.
 
 ---
 
-Supported Template Formats
+## Supported Template Formats
 
-* TXT
-* Markdown (MD)
-* DOCX
-* XLS
-* XLSX
+Currently supported:
+
+- TXT
+- Markdown (.md)
+- DOCX
+- XLS
+- XLSX
 
 Planned support:
 
-* PDF import
-* ODT
-* HTML
+- PDF import
+- ODT
+- HTML
 
 ---
 
-Examples
+## Example Workflow
 
-```sh
-markforge db init
+```bash
+markforge db --init --template students
+markforge db --list
+markforge data --show students
+markforge template --list
+markforge generate --source students --template invitation
 ```
 
-```sh
-markforge data list
-```
+---
 
-```sh
-markforge generate \
-```
+## License
 
-    --template invitation \
-    --id 3
-```sh
-markforge generate \
-```
-
-    --template report \
-    --all
-
+Academic course work project.
