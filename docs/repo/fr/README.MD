@@ -1,6 +1,6 @@
 # MarkForge
 
-[English](../../../README) | [Русский](../ru/README.MD) | [العربية](../ar/README.MD) | [Français](README.MD)
+[English](../../../README.MD) | [Русский](../ru/README.MD) | [العربية](../ar/README.MD) | [Français](README.MD)
 
 Application en ligne de commande multiplateforme pour la génération de documents à partir d'une base de données.
 
@@ -15,7 +15,7 @@ Plateformes prises en charge :
 
 ### Télécharger une version prête à l'emploi
 
-Téléchargez la dernière version depuis la page GitHub Releases du projet.
+Téléchargez la dernière version depuis la page des [GitHub Releases du projet](https://github.com/user/markforge/releases).
 
 ### Linux / macOS
 

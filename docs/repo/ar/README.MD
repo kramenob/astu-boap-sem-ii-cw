@@ -2,7 +2,7 @@
 
 # MarkForge
 
-[English](../../../README) | [Русский](../ru/README.MD) | [العربية](README.MD) | [Français](../fr/README.MD)
+[English](../../../README.MD) | [Русский](../ru/README.MD) | [العربية](README.MD) | [Français](../fr/README.MD)
 
 تطبيق سطر أوامر متعدد المنصات لإنشاء المستندات اعتماداً على قواعد البيانات.
 
@@ -17,7 +17,7 @@
 
 ### تنزيل إصدار جاهز
 
-قم بتنزيل أحدث إصدار من صفحة GitHub Releases الخاصة بالمشروع.
+قم بتنزيل أحدث إصدار من [صفحة GitHub Releases الخاصة بالمشروع](https://github.com/user/markforge/releases).
 
 ### Linux / macOS
 

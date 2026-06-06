@@ -1,12 +1,12 @@
 # MarkForge
 
-[English](../../../README) | [Русский](README.MD) | [العربية](../ar/README.MD) | [Français](../fr/README.MD)
+[English](../../../README.MD) | [Русский](README.MD) | [العربية](../ar/README.MD) | [Français](../fr/README.MD)
 
 ## Установка
 
 ### Загрузка готовой сборки
 
-Вы можете скачать готовую сборку для вашей операционной системы с [релизов на GitHub](https://github.com/user/markforge/releases).
+Вы можете скачать готовую сборку для вашей операционной системы с [GitHub Releases](https://github.com/user/markforge/releases).
 
 ### Быстрый старт
 
