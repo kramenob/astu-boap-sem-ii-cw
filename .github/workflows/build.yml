@@ -88,7 +88,7 @@ jobs:
             exit 1
           }
 
-          Copy-Item $exe.FullName dist\markforge-windows-x64.exe
+          Copy-Item $exe.FullName dist\markforge-Windows-x64.exe
 
       - name: Upload build
         uses: actions/upload-artifact@v4
@@ -104,6 +104,21 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version info
+        id: ver
+        shell: bash
+        run: |
+          CURR=$(grep -oE '#define[[:space:]]+APP_VERSION[[:space:]]+"?[0-9A-Za-z.]+"?' src/core/About.h | grep -oE '[0-9A-Za-z.]+')
+          PREV=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "v0.0.0")
+
+          echo "curr=$CURR" >> $GITHUB_OUTPUT
+          echo "prev=$PREV" >> $GITHUB_OUTPUT
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -116,10 +131,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
+          name: MarkForge ${{ steps.ver.outputs.curr }}
           generate_release_notes: false
           body: |
-            MarkForge Release v${{ github.run_number }}
+            Full Changelog: ${{ steps.ver.outputs.prev }}...v${{ steps.ver.outputs.curr }}
           files: dist/**/*
           draft: false
           prerelease: false
