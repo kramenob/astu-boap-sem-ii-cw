@@ -74,7 +74,22 @@ jobs:
         shell: pwsh
         run: |
           mkdir dist
-          copy build\Release\markforge.exe dist\markforge-windows-x64.exe
+
+          $exe = Get-ChildItem -Path build -Recurse -Filter "*.exe" |
+          Where-Object { $_.Name -like "markforge*.exe" } |
+          Select-Object -First 1
+
+          if (-not $exe) {
+          # fallback: any exe
+          $exe = Get-ChildItem -Path build -Recurse -Filter "*.exe" | Select-Object -First 1
+          }
+
+          if (-not $exe) {
+          Write-Error "No executable found in build directory"
+          exit 1
+          }
+
+          Copy-Item $exe.FullName dist\markforge-windows-x64.exe
 
       - name: Upload build
         uses: actions/upload-artifact@v4
