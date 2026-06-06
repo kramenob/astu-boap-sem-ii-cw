@@ -5,17 +5,15 @@ project(boap_sem_ii_cw LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# ---- Source files ----
-set(SOURCES
-    src/main.cpp
-    src/database/Database.cpp
+# ---- Gather ALL sources ----
+file(GLOB_RECURSE SOURCES
+    src/*.cpp
 )
 
 add_executable(boap_app ${SOURCES})
 
 # ---- SQLite ----
 find_package(SQLite3 REQUIRED)
-
 target_link_libraries(boap_app PRIVATE SQLite::SQLite3)
 
 # ---- Include dirs ----
