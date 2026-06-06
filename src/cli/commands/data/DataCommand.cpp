@@ -1,10 +1,12 @@
 // Implementation for DataCommand
 #include "DataCommand.h"
 #include "../../../database/Database.h"
+#include "../../../core/About.h"
 
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <unordered_set>
 
 // Helper function to calculate the number of UTF-8 codepoints in a string
 static size_t utf8Length(const std::string& s)
@@ -20,16 +22,38 @@ static size_t utf8Length(const std::string& s)
 
 int DataCommand::execute(const CommandContext& ctx)
 {
-    auto showIt = ctx.args.find("--show");
+    Database db;
 
-    if (showIt == ctx.args.end()) {
-        std::cerr << "Usage:\n";
-        std::cerr << "  markforge data --show\n";
-        std::cerr << "  markforge data --show <table_name>\n";
-        return 1;
+    const std::unordered_set<std::string> allowedOptions = {
+        "--show",
+        "--help"
+    };
+
+    if (ctx.args.count("--help")) {
+        std::cout
+            << "Usage: " << NAME << " data --show [table_name]\n"
+            << "\n"
+            << "Options:\n"
+            << "  --show [table_name]\n"
+            << "  --help\n";
+        return 0;
     }
 
-    Database db;
+    auto showIt = ctx.args.find("--show");
+
+    for (const auto& [key, value] : ctx.args) {
+        if (key.rfind("--", 0) == 0 && !allowedOptions.count(key)) {
+            std::cerr << "Error: unknown option '" << key << "'\n";
+            std::cerr << "Use: " << NAME << " data --help\n";
+            return 1;
+        }
+    }
+
+    if (showIt == ctx.args.end()) {
+        std::cerr << "Error: missing required option --show\n";
+        std::cerr << "Use: " << NAME << " data --help\n";
+        return 1;
+    }
 
     std::string tableName;
 
@@ -59,7 +83,8 @@ int DataCommand::execute(const CommandContext& ctx)
         std::cin >> choice;
 
         if (choice < 1 || choice > tables.size()) {
-            std::cerr << "Invalid choice.\n";
+            std::cerr << "Error: invalid choice\n";
+            std::cerr << "Use: " << NAME << " data --help\n";
             return 1;
         }
 
@@ -67,6 +92,21 @@ int DataCommand::execute(const CommandContext& ctx)
     }
     else {
         tableName = showIt->second;
+    }
+
+    // Strict positional argument validation
+    for (const auto& [key, value] : ctx.args) {
+        if (key.rfind("--", 0) != 0 && key != "--show") {
+            std::cerr << "Error: unknown command or argument '" << key << "'\n";
+            std::cerr << "Use: " << NAME << " data --help\n";
+            return 1;
+        }
+    }
+
+    if (tableName.empty()) {
+        std::cerr << "Error: missing table name\n";
+        std::cerr << "Use: " << NAME << " data --help\n";
+        return 1;
     }
 
     auto rows = db.getRows(tableName, 5);

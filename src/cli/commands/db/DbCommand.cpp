@@ -1,48 +1,82 @@
 #include "DbCommand.h"
 #include "../../../database/Database.h"
+#include "../../../core/About.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 int DbCommand::execute(const CommandContext& ctx)
 {
     Database db;
 
+    const std::unordered_set<std::string> allowedOptions = {
+        "--init",
+        "--interactive",
+        "--schema",
+        "--schema-show",
+        "--template",
+        "--templates",
+        "--drop",
+        "--list",
+        "--all",
+        "--help",
+    };
+
+    if (ctx.args.count("--help")) {
+        std::cout
+            << "Usage: " << NAME << " db [options]\n"
+            << "\n"
+            << "Options:\n"
+            << "  --init\n"
+            << "  --interactive\n"
+            << "  --schema <file>\n"
+            << "  --schema-show <table>\n"
+            << "  --template <name>\n"
+            << "  --templates\n"
+            << "  --drop <table>\n"
+            << "  --list\n"
+            << "  --all\n"
+            << "  --help\n";
+        return 0;
+    }
+
     const bool init          = ctx.args.count("--init");
-    const bool reset         = ctx.args.count("--reset");
     const bool interactive   = ctx.args.count("--interactive");
     const bool schema        = ctx.args.count("--schema");
     const bool schemaShow    = ctx.args.count("--schema-show");
     const bool templ         = ctx.args.count("--template");
-	const bool listTemplates = ctx.args.count("--templates");
+    const bool listTemplates = ctx.args.count("--templates");
     const bool drop          = ctx.args.count("--drop");
     const bool list          = ctx.args.count("--list");
-	const bool all           = ctx.args.count("--all");
+    const bool all           = ctx.args.count("--all");
 
-    if (!init && !reset && !schema && !schemaShow && !drop && !list) {
-        std::cerr
-            << "Usage:\n"
-            << "  markforge db --init\n"
-            << "  markforge db --init --interactive\n"
-            << "  markforge db --init --template <employees|students|patients>\n"
-            << "  markforge db --templates\n"
-            << "  markforge db --schema <file.sql>\n"
-            << "  markforge db --schema-show <table_name>\n"
-            << "  markforge db --reset\n"
-            << "  markforge db --drop <table_name>\n"
-            << "  markforge db --drop --all\n"
-            << "  markforge db --list\n"
-            << "  markforge db --list --all\n";
-
-        return 1;
+    for (const auto& [key, value] : ctx.args) {
+        if (key.rfind("--", 0) == 0) {
+            if (!allowedOptions.count(key)) {
+                std::cerr << "Error: unknown option '" << key << "'\n";
+                std::cerr << "Use: " << NAME << " db --help\n";
+                return 1;
+            }
+        }
     }
-    // markforge db --schema-show persons
+
+    for (const auto& [key, value] : ctx.args) {
+        // Detect positional or unknown command-like arguments (e.g. "absurd")
+        if (key.rfind("--", 0) != 0) {
+            std::cerr << "Error: unknown command or argument '" << key << "'\n";
+            std::cerr << "Use: " << NAME << " db --help\n";
+            return 1;
+        }
+    }
+
+    // markforge db --schema-show students
     if (schemaShow) {
         auto it = ctx.args.find("--schema-show");
 
         if (it == ctx.args.end() || it->second.empty() || it->second == "true") {
-            std::cerr << "Usage: markforge db --schema-show <table_name>\n";
+            std::cerr << "Usage: " << NAME << " db --schema-show <table_name>\n";
             return 1;
         }
 
@@ -79,7 +113,7 @@ int DbCommand::execute(const CommandContext& ctx)
         return 0;
     }
 
-    // markforge db --drop persons
+    // markforge db --drop students
     if (drop) {
         if (all) {
             if (!db.dropAllTables()) {
@@ -94,7 +128,7 @@ int DbCommand::execute(const CommandContext& ctx)
         auto it = ctx.args.find("--drop");
 
         if (it == ctx.args.end() || it->second.empty() || it->second == "true") {
-            std::cerr << "Usage: markforge db --drop <table_name>\n";
+            std::cerr << "Usage: " << NAME << " db --drop <table_name>\n";
             return 1;
         }
 
@@ -120,19 +154,11 @@ int DbCommand::execute(const CommandContext& ctx)
         return 0;
     }
 
-    // markforge db --reset
-    if (reset) {
-        db.reset();
-        std::cout << "Database reset.\n";
-        return 0;
-    }
-
 	// markforge db --templates
 	if (listTemplates) {
 		std::cout << "Available DB templates:\n"
 				<< "  - students\n"
-				<< "  - employees\n"
-				<< "  - patients\n";
+				<< "  - teachers\n";
 		return 0;
 	}
 
@@ -148,8 +174,7 @@ int DbCommand::execute(const CommandContext& ctx)
 			std::cout
 				<< "Select template:\n"
 				<< "1. students\n"
-				<< "2. employees\n"
-				<< "3. patients\n"
+				<< "2. teachers\n"
 				<< "Enter choice: ";
 
 			int choice = 0;
@@ -160,10 +185,7 @@ int DbCommand::execute(const CommandContext& ctx)
 					templateName = "students";
 					break;
 				case 2:
-					templateName = "employees";
-					break;
-				case 3:
-					templateName = "patients";
+					templateName = "teachers";
 					break;
 				default:
 					std::cout << "Invalid choice, using default (students)\n";
@@ -172,15 +194,28 @@ int DbCommand::execute(const CommandContext& ctx)
 			}
 		}
 
+        const std::unordered_set<std::string> validTemplates = {
+            "students",
+            "teachers"
+        };
+
+        if (!validTemplates.count(templateName)) {
+            std::cerr << "Error: unknown template '" << templateName << "'\n";
+            std::cerr << "Use: " << NAME << " db --help\n";
+            return 1;
+        }
+
         db.init(templateName);
 
         std::cout
-            << "Database initialized using template: "
+            << "Database initialized using default template: "
             << templateName
             << '\n';
 
         return 0;
     }
 
-    return 0;
+    std::cerr << "Error: no valid db command provided.\n";
+    std::cerr << "Use: " << NAME << " db --help\n";
+    return 1;
 }

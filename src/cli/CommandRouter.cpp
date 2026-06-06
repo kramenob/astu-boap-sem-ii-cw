@@ -5,7 +5,7 @@ int CommandRouter::dispatch(const std::string& name, const CommandContext& ctx)
 {
     if (!commands.count(name)) {
 		std::cerr << "Unknown command: " << name << "\n";
-		std::cerr << "Try: markforge help\n";
+		std::cerr << "Try: markforge --help\n";
         return 1;
     }
 

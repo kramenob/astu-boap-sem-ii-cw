@@ -5,3 +5,12 @@
 # Builds
 output/
 build/
+
+# temp
+temp/
+tmp/
+.shit/
+*.temp.*
+*.docx
+!base.docx
+src/resources

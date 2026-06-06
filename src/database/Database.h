@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../models/Person.h"
 #include <string>
 #include <vector>
 
@@ -9,13 +8,7 @@ public:
     Database(const std::string& dbPath);
     Database();
 
-    void init();
     void init(const std::string& templateName);
-
-    void touchUpdatedAt(int id);
-    void reset();
-
-    Person getPersonById(int id);
 
     std::vector<std::string> listTables();
 	std::vector<std::string> listUserTables();

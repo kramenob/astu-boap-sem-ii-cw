@@ -7,16 +7,15 @@
 #include <iomanip>
 #include <ctime>
 
-#include "templates/TemplateEngine.h"
 #include "database/Database.h"
-#include "models/Person.h"
-#include "cli/commands/help/HelpCommand.h"
 #include "cli/Command.h"
 #include "cli/CommandRouter.h"
+#include "cli/commands/help/HelpCommand.h"
 #include "cli/commands/generate/GenerateCommand.h"
 #include "cli/commands/db/DbCommand.h"
 #include "cli/commands/data/DataCommand.h"
 #include "cli/commands/template/TemplateCommand.h"
+#include "cli/commands/version/VersionCommand.h"
 
 CommandContext parse(int argc, char** argv)
 {
@@ -54,8 +53,17 @@ int main(int argc, char** argv)
     router.registerCommand("data", std::make_unique<DataCommand>());
     router.registerCommand("template", std::make_unique<TemplateCommand>());
 
+    router.registerCommand("version",   std::make_unique<VersionCommand>());
+    router.registerCommand("--version", std::make_unique<VersionCommand>());
+    router.registerCommand("--v",       std::make_unique<VersionCommand>());
+    router.registerCommand("--status",  std::make_unique<VersionCommand>());
+
 	router.registerCommand("help", std::make_unique<HelpCommand>());
 	router.registerCommand("--help", std::make_unique<HelpCommand>());
+
+    if (argc < 2) {
+        return router.dispatch("help", CommandContext{});
+    }
 
     CommandContext ctx = parse(argc, argv);
 

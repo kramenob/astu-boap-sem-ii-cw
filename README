@@ -39,7 +39,7 @@ markforge db --init --templates
 Create application database with example schema and demo data.
 
 ```sh
-markforge db --init --template <employees|students|patients>
+markforge db --init --template <employees|students>
 ```
 
 Delete table with `<table_name>`

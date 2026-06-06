@@ -1,18 +1,39 @@
 #include "TemplateCommand.h"
+#include "../../../core/About.h"
 
 #include <iostream>
 #include <filesystem>
 #include <fstream>
 #include <vector>
 #include <cstdlib>
+#include <unordered_set>
 
 namespace fs = std::filesystem;
 
-static const std::string TEMPLATE_DIR = "src/resources/templates";
+static std::filesystem::path getUserDataDir()
+{
+#ifdef _WIN32
+    const char* home = std::getenv("USERPROFILE");
+#else
+    const char* home = std::getenv("HOME");
+#endif
+
+    std::filesystem::path base = home ? std::filesystem::path(home) : std::filesystem::current_path();
+    base /= "Documents";
+    base /= NAME;
+    return base;
+}
+
+static fs::path getTemplateDir()
+{
+    fs::path dir = getUserDataDir() / "templates";
+    fs::create_directories(dir);
+    return dir;
+}
 
 static std::string findTemplateFile(const std::string& name)
 {
-    for (const auto& entry : fs::directory_iterator(TEMPLATE_DIR)) {
+    for (const auto& entry : fs::directory_iterator(getTemplateDir())) {
         if (!entry.is_regular_file()) continue;
 
         auto filename = entry.path().stem().string();
@@ -26,6 +47,46 @@ static std::string findTemplateFile(const std::string& name)
 
 int TemplateCommand::execute(const CommandContext& ctx)
 {
+    const std::unordered_set<std::string> allowedOptions = {
+        "--list",
+        "--show",
+        "--add",
+        "--remove",
+        "-as",
+        "--as",
+        "--help",
+    };
+
+    if (ctx.args.count("--help")) {
+        std::cout
+            << "Usage: " << NAME << " template [options]\n"
+            << "\n"
+            << "Options:\n"
+            << "  --list\n"
+            << "  --show <name>\n"
+            << "  --add <file> -as <name>\n"
+            << "  --remove <name>\n"
+            << "  --help\n";
+        return 0;
+    }
+
+    for (const auto& [key, value] : ctx.args) {
+        if (key.rfind("--", 0) == 0 && !allowedOptions.count(key)) {
+            std::cerr << "Error: unknown option '" << key << "'\n";
+            std::cerr << "Use: " << NAME << " template --help\n";
+            return 1;
+        }
+    }
+
+    // Strict positional argument validation
+    for (const auto& [key, value] : ctx.args) {
+        if (key.rfind("--", 0) != 0 && key.rfind("-", 0) != 0) {
+            std::cerr << "Error: unknown command or argument '" << key << "'\n";
+            std::cerr << "Use: " << NAME << " template --help\n";
+            return 1;
+        }
+    }
+
     auto listIt = ctx.args.find("--list");
     auto showIt = ctx.args.find("--show");
     auto addIt  = ctx.args.find("--add");
@@ -35,7 +96,7 @@ int TemplateCommand::execute(const CommandContext& ctx)
     if (listIt != ctx.args.end()) {
         std::cout << "Templates:\n";
 
-        for (const auto& entry : fs::directory_iterator(TEMPLATE_DIR)) {
+        for (const auto& entry : fs::directory_iterator(getTemplateDir())) {
             if (!entry.is_regular_file()) continue;
             std::cout << "  - " << entry.path().stem().string() << "\n";
         }
@@ -50,7 +111,8 @@ int TemplateCommand::execute(const CommandContext& ctx)
         std::string file = findTemplateFile(name);
 
         if (file.empty()) {
-            std::cerr << "Template not found: " << name << "\n";
+            std::cerr << "Error: template not found: " << name << "\n";
+            std::cerr << "Use: " << NAME << " template --help\n";
             return 1;
         }
 
@@ -81,7 +143,8 @@ int TemplateCommand::execute(const CommandContext& ctx)
         }
 
         if (asIt == ctx.args.end()) {
-            std::cerr << "Usage: template --add <file> -as|--as <name>\n";
+            std::cerr << "Error: missing required option -as|--as\n";
+            std::cerr << "Use: " << NAME << " template --help\n";
             return 1;
         }
 
@@ -90,18 +153,20 @@ int TemplateCommand::execute(const CommandContext& ctx)
         fs::path srcPath(src);
 
         if (!fs::exists(srcPath)) {
-            std::cerr << "Source file not found\n";
+            std::cerr << "Error: source file not found\n";
+            std::cerr << "Use: " << NAME << " template --help\n";
             return 1;
         }
 
         std::string ext = srcPath.extension().string();
 
-        fs::path dst = fs::path(TEMPLATE_DIR) / (name + ext);
+        fs::path dst = getTemplateDir() / (name + ext);
 
         try {
             fs::copy_file(srcPath, dst, fs::copy_options::overwrite_existing);
         } catch (...) {
-            std::cerr << "Failed to copy template\n";
+            std::cerr << "Error: failed to copy template\n";
+            std::cerr << "Use: " << NAME << " template --help\n";
             return 1;
         }
 
@@ -116,14 +181,16 @@ int TemplateCommand::execute(const CommandContext& ctx)
         std::string file = findTemplateFile(name);
 
         if (file.empty()) {
-            std::cerr << "Template not found: " << name << "\n";
+            std::cerr << "Error: template not found: " << name << "\n";
+            std::cerr << "Use: " << NAME << " template --help\n";
             return 1;
         }
 
         try {
             fs::remove(file);
         } catch (...) {
-            std::cerr << "Failed to remove template\n";
+            std::cerr << "Error: failed to remove template\n";
+            std::cerr << "Use: " << NAME << " template --help\n";
             return 1;
         }
 
@@ -131,11 +198,7 @@ int TemplateCommand::execute(const CommandContext& ctx)
         return 0;
     }
 
-    std::cerr << "Usage:\n";
-    std::cerr << "  template --list\n";
-    std::cerr << "  template --show <name>\n";
-    std::cerr << "  template --add <file> -as <name>\n";
-    std::cerr << "  template --remove <name>\n";
-
+    std::cerr << "Error: no valid template command provided\n";
+    std::cerr << "Use: " << NAME << " template --help\n";
     return 1;
 }
