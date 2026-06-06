@@ -18,7 +18,7 @@ COMMANDS and OPTIONS:
   db                                         Database operations
     --init                                   Create table in interactive mode
     --init --templates                       Show available table templates
-    --init --template <employees|students>   Initialize example database
+    --init --template <teachers|students>    Initialize example database
     --drop <table_name>                      Delete table
     --drop --all                             Delete all tables
     --list                                   Show user created tables

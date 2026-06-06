@@ -180,9 +180,9 @@ int GenerateCommand::execute(const CommandContext& ctx)
             std::string xml = buffer.str();
             in.close();
 
-            // apply placeholder replacement (safe: unknown placeholders are ignored automatically)
+            // apply placeholder replacement (REUSING YOUR replaceAll LOGIC)
             for (size_t i = 0; i < columns.size() && i < rows[r].size(); ++i) {
-                const std::string key = "{{" + columns[i] + "}}";
+                std::string key = "{{" + columns[i] + "}}";
                 xml = replaceAll(xml, key, rows[r][i]);
             }
 
