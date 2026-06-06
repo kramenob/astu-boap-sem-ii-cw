@@ -76,7 +76,8 @@ jobs:
           $INCLUDE = "$PWD\vcpkg\installed\x64-windows\include"
           $LIB = "$PWD\vcpkg\installed\x64-windows\lib\sqlite3.lib"
 
-          cl /std:c++17 /EHsc /I$INCLUDE $FILES /Fe:build\markforge.exe /link $LIB
+          $VSDevCmd = "${env:ProgramFiles}\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
+          cmd /c "\"$VSDevCmd\" && cl /std:c++17 /EHsc /I$INCLUDE $FILES /Fe:build\markforge.exe /link $LIB"
 
       - name: Upload build
         uses: actions/upload-artifact@v4
