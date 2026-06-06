@@ -38,10 +38,20 @@ jobs:
           fi
 
       # ---------------- WINDOWS ----------------
-      - name: Setup MSVC / Mingw
+      - name: Setup MSVC
+        if: matrix.os == 'windows-latest'
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup vcpkg
+        if: matrix.os == 'windows-latest'
+        uses: microsoft/setup-vcpkg@v4
+        with:
+          vcpkgRoot: ${{ github.workspace }}/vcpkg
+
+      - name: Install dependencies (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          choco install mingw -y
+          vcpkg install sqlite3
 
       # ---------------- BUILD ----------------
       - name: Build project (Linux/macOS)
@@ -70,10 +80,13 @@ jobs:
         run: |
           mkdir build
 
-          g++ -std=c++17 `
-            (Get-ChildItem -Recurse -Filter *.cpp | ForEach-Object FullName) `
-            -o build/markforge.exe `
-            -lsqlite3
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+
+          cl /std:c++17 /EHsc ^
+            /I%VCPKG_ROOT%\installed\x64-windows\include ^
+            src\database\Database.cpp src\main.cpp ^
+            /Fe:build\markforge.exe ^
+            %VCPKG_ROOT%\installed\x64-windows\lib\sqlite3.lib
 
       - name: Upload build
         uses: actions/upload-artifact@v4
