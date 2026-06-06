@@ -12,6 +12,7 @@
 #include <cstdlib>
 
 #include "../../../database/Database.h"
+#include "../../../core/About.h"
 
 namespace fs = std::filesystem;
 
@@ -42,11 +43,31 @@ static std::string loadFile(const std::string& path)
     return buffer.str();
 }
 
+
+static std::filesystem::path getUserDataDir()
+{
+#ifdef _WIN32
+    const char* home = std::getenv("USERPROFILE");
+#else
+    const char* home = std::getenv("HOME");
+#endif
+
+    std::filesystem::path base = home ? std::filesystem::path(home) : std::filesystem::current_path();
+    base /= "Documents";
+    base /= NAME;
+    return base;
+}
+
+static std::filesystem::path getTemplateDir()
+{
+    std::filesystem::path dir = getUserDataDir() / "templates";
+    std::filesystem::create_directories(dir);
+    return dir;
+}
+
 static std::string findTemplateFile(const std::string& name)
 {
-    const std::string dir = "src/resources/templates";
-
-    for (const auto& entry : fs::directory_iterator(dir)) {
+    for (const auto& entry : std::filesystem::directory_iterator(getTemplateDir())) {
         if (!entry.is_regular_file()) continue;
 
         if (entry.path().stem().string() == name) {
@@ -159,9 +180,9 @@ int GenerateCommand::execute(const CommandContext& ctx)
             std::string xml = buffer.str();
             in.close();
 
-            // apply placeholder replacement (REUSING YOUR replaceAll LOGIC)
+            // apply placeholder replacement (safe: unknown placeholders are ignored automatically)
             for (size_t i = 0; i < columns.size() && i < rows[r].size(); ++i) {
-                std::string key = "{{" + columns[i] + "}}";
+                const std::string key = "{{" + columns[i] + "}}";
                 xml = replaceAll(xml, key, rows[r][i]);
             }
 

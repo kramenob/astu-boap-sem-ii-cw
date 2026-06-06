@@ -132,12 +132,49 @@ int DbCommand::execute(const CommandContext& ctx)
             return 1;
         }
 
-        if (!db.dropTable(it->second)) {
-            std::cerr << "Failed to drop table: " << it->second << '\n';
+        const std::string tableName = it->second;
+
+        // check if table exists
+        auto tables = db.listTables();
+        bool exists = false;
+
+        for (const auto& t : tables) {
+            if (t == tableName) {
+                exists = true;
+                break;
+            }
+        }
+
+        if (!exists) {
+            std::cerr << "Error: table '" << tableName << "' does not exist.\n";
+            std::cerr << "Use: " << NAME << " db --list\n";
             return 1;
         }
 
-        std::cout << "Dropped table: " << it->second << '\n';
+        // confirmation prompt
+        std::cout << "Are you sure you want to drop table '" << tableName << "'? (y/N): " << std::flush;
+
+        std::string answer;
+        std::getline(std::cin, answer);
+
+        if (answer.empty()) {
+            std::cout << "Aborted.\n";
+            return 0;
+        }
+
+        char c = static_cast<char>(std::tolower(answer[0]));
+
+        if (c != 'y') {
+            std::cout << "Aborted.\n";
+            return 0;
+        }
+
+        if (!db.dropTable(tableName)) {
+            std::cerr << "Failed to drop table: " << tableName << '\n';
+            return 1;
+        }
+
+        std::cout << "Dropped table: " << tableName << '\n';
         return 0;
     }
 
