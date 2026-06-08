@@ -1,8 +1,13 @@
+# @file generate.sh
+# @brief DOCX generation pipeline script for MarkForge project documentation.
+#
+# Converts Markdown sources into DOCX using Pandoc and merges with base template.
 #!/usr/bin/env bash
 # Generate script for assembling DOCX course project
 # Pipeline: Markdown -> Pandoc -> DOCX body -> Python merge with base DOCX
 set -e
 
+# ---------------- Environment Loading ----------------
 # Resolve script and project root directories
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
@@ -15,9 +20,11 @@ if [ -f "$ENV_FILE" ]; then
     set +a
 fi
 
+# ---------------- Dependency Checks ----------------
 # Ensure required tools are available
 command -v python3 >/dev/null 2>&1 || { echo "python3 not found"; exit 1; }
 
+# ---------------- Output Configuration ----------------
 # Define output directory and main DOCX assets
 OUTPUT_DIR="$PROJECT_DIR/output"
 # Base DOCX contains title page and formatting base
@@ -38,6 +45,7 @@ TMP_MD_DIR="$(mktemp -d "$OUTPUT_DIR/.md-expanded.XXXXXX")"
 # Cleanup temporary markdown directory on exit
 trap 'rm -rf "$TMP_MD_DIR"' EXIT
 
+# ---------------- Markdown Collection ----------------
 # Collect all Markdown files in deterministic order (stable across runs)
 FILES_ARR=()
 
@@ -59,6 +67,7 @@ fi
 
 OUTPUT_FILE="$OUTPUT_DIR/project.body.docx"
 
+# ---------------- Pandoc Conversion ----------------
 # Convert Markdown files into DOCX body using Pandoc
 pandoc "${FILES_ARR[@]}" \
     --from markdown \
@@ -68,9 +77,9 @@ pandoc "${FILES_ARR[@]}" \
     --standalone \
     --output "$OUTPUT_FILE" \
     --resource-path="$PROJECT_DIR/docs/main/project.d:." \
-    --lua-filter="$SCRIPT_DIR/lua-filters/uppercase.lua" \
     --lua-filter="$SCRIPT_DIR/lua-filters/remove-hr.lua"
 
+# ---------------- Python Environment Setup ----------------
 # Create and prepare Python virtual environment for docx merge step
 VENV_DIR="$PROJECT_DIR/scripts/docs/.venv"
 REQ_FILE="$PROJECT_DIR/scripts/docs/requirements"
@@ -86,6 +95,7 @@ VENV_PY="$VENV_DIR/bin/python"
 $VENV_PY -m pip install --upgrade pip > /dev/null
 $VENV_PY -m pip install -r "$REQ_FILE"
 
+# ---------------- DOCX Merge Step ----------------
 # Merge base DOCX (title pages) with generated body DOCX
 $VENV_PY "$SCRIPT_DIR/merge.py" \
     "$ENV_FILE" \
@@ -93,6 +103,7 @@ $VENV_PY "$SCRIPT_DIR/merge.py" \
     "$OUTPUT_FILE" \
     "$OUTPUT_DIR/project.docx"
 
+# ---------------- Completion ----------------
 # Output success message
 if [ $? -eq 0 ]; then
     echo "Generated project DOCX: $OUTPUT_DIR/project.docx"

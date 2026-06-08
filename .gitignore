@@ -1,13 +1,21 @@
+# @file .gitignore
+# @brief Defines intentionally untracked files for the MarkForge project.
+#
+# Excludes sensitive data, build artifacts, temporary files,
+# and generated resources from version control.
 
-# Sensitive files
+# ---------------- Sensitive Files ----------------
+# Sensitive Files (environment & embedded data)
 .env
 EmbeddedSql.h
 
+# ---------------- Build Artifacts ----------------
 # Builds
 output/
 build/
 boap-sem-ii-cw.xcodeproj/
 
+# ---------------- Temporary Files ----------------
 # temp
 temp/
 tmp/
@@ -15,5 +23,7 @@ tmp/
 *.temp.*
 *.docx
 !base.docx
+
+# ---------------- Resource & Asset Exclusions ----------------
 src/resources
 *.bkp

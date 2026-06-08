@@ -1,3 +1,19 @@
+/**
+ * @file main.cpp
+ * @brief Application entry point and command-line routing.
+ *
+ * This file initializes the command infrastructure,
+ * registers available CLI commands, parses command-line
+ * arguments, and dispatches execution to the selected command.
+ */
+
+/**
+ * Standard Library Imports
+ *
+ * Provide filesystem access, stream processing,
+ * string manipulation, containers, formatting,
+ * and date/time utilities.
+ */
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -8,10 +24,21 @@
 
 #include <ctime>
 
+/**
+ * Platform-Specific Imports
+ *
+ * Windows console configuration for UTF-8 support.
+ */
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
+/**
+ * Project Module Imports
+ *
+ * Core database layer, command abstractions,
+ * command router, and concrete CLI commands.
+ */
 #include "database/Database.h"
 #include "cli/Command.h"
 #include "cli/CommandRouter.h"
@@ -22,6 +49,15 @@
 #include "cli/commands/template/TemplateCommand.h"
 #include "cli/commands/version/VersionCommand.h"
 
+/**
+ * @brief Parses command-line arguments into a command context.
+ *
+ * Supports both boolean flags and key-value pairs.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Raw command-line argument array.
+ * @return Parsed command context.
+ */
 CommandContext parse(int argc, char** argv)
 {
     CommandContext ctx;
@@ -49,6 +85,17 @@ CommandContext parse(int argc, char** argv)
     return ctx;
 }
 
+/**
+ * @brief Application entry point.
+ *
+ * Configures the runtime environment, registers
+ * available commands, and dispatches the selected
+ * command to the router.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Raw command-line argument array.
+ * @return Command execution status code.
+ */
 int main(int argc, char** argv)
 {
 #ifdef _WIN32

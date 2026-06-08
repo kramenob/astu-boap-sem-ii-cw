@@ -1,6 +1,24 @@
+/**
+ * @file Database.cpp
+ * @brief SQLite database management implementation.
+ *
+ * Provides database initialization, schema inspection,
+ * table management, and data retrieval utilities.
+ */
+
+/**
+ * Project Module Imports
+ */
 #include "Database.h"
 #include "EmbeddedSql.h"
 #include "../core/About.h"
+
+/**
+ * Third-Party and Standard Library Imports
+ *
+ * SQLite integration, filesystem access,
+ * file processing, formatting, and algorithms.
+ */
 #include <iostream>
 #include <sqlite3.h>
 #include <filesystem>
@@ -12,6 +30,11 @@
 
 #include <cstdlib>
 
+/**
+ * @brief Resolves the user-specific application data directory.
+ *
+ * @return Path to the application's document storage location.
+ */
 static std::filesystem::path getUserDataDir()
 {
 #ifdef _WIN32
@@ -26,6 +49,9 @@ static std::filesystem::path getUserDataDir()
     return base;
 }
 
+/**
+ * @brief Opens or creates a database at the specified path.
+ */
 Database::Database(const std::string& path) : dbPath(path), db(nullptr) {
 
     std::filesystem::create_directories(
@@ -42,6 +68,9 @@ Database::Database(const std::string& path) : dbPath(path), db(nullptr) {
     }
 }
 
+/**
+ * @brief Opens or creates the default application database.
+ */
 Database::Database()
 {
     std::filesystem::path base = getUserDataDir() / "database";
@@ -53,6 +82,9 @@ Database::Database()
     sqlite3_open(dbPath.c_str(), (sqlite3**)&db);
 }
 
+/**
+ * @brief Returns all tables present in the database.
+ */
 std::vector<std::string> Database::listTables()
 {
     std::vector<std::string> tables;
@@ -79,6 +111,9 @@ std::vector<std::string> Database::listTables()
     return tables;
 }
 
+/**
+ * @brief Returns user-defined tables excluding SQLite internals.
+ */
 std::vector<std::string> Database::listUserTables()
 {
     auto tables = listTables();
@@ -95,6 +130,9 @@ std::vector<std::string> Database::listUserTables()
     return tables;
 }
 
+/**
+ * @brief Removes a table from the database.
+ */
 bool Database::dropTable(const std::string& tableName)
 {
     std::string sql =
@@ -118,6 +156,9 @@ bool Database::dropTable(const std::string& tableName)
     return true;
 }
 
+/**
+ * @brief Removes all user-accessible tables.
+ */
 bool Database::dropAllTables()
 {
     auto tables = listTables();
@@ -135,6 +176,9 @@ bool Database::dropAllTables()
     return true;
 }
 
+/**
+ * @brief Initializes the database from an external schema.
+ */
 bool Database::initFromSchema(const std::string& schemaPath)
 {
     std::cout
@@ -145,6 +189,9 @@ bool Database::initFromSchema(const std::string& schemaPath)
     return true;
 }
 
+/**
+ * @brief Produces a formatted schema description for a table.
+ */
 std::string Database::showSchema(const std::string& tableName)
 {
     std::string sql = "PRAGMA table_info(" + tableName + ");";
@@ -206,6 +253,9 @@ std::string Database::showSchema(const std::string& tableName)
     return out.str();
 }
 
+/**
+ * @brief Creates database structures from an embedded template.
+ */
 void Database::init(const std::string& templateName)
 {
     std::string sql;
@@ -243,11 +293,17 @@ void Database::init(const std::string& templateName)
     }
 }
 
+/**
+ * @brief Resolves a template name to a template path.
+ */
 std::string Database::resolveTemplatePath(const std::string& templateName)
 {
     return {};
 }
 
+/**
+ * @brief Executes SQL statements from a file.
+ */
 bool Database::executeSqlFile(const std::string& path)
 {
     std::ifstream file(path);
@@ -281,6 +337,9 @@ bool Database::executeSqlFile(const std::string& path)
     return true;
 }
 
+/**
+ * @brief Returns column names for the specified table.
+ */
 std::vector<std::string> Database::getColumns(
     const std::string& tableName)
 {
@@ -310,6 +369,9 @@ std::vector<std::string> Database::getColumns(
     return columns;
 }
 
+/**
+ * @brief Retrieves table rows up to the specified limit.
+ */
 std::vector<std::vector<std::string>> Database::getRows(
     const std::string& tableName,
     int limit)

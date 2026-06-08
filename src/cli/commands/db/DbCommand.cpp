@@ -1,3 +1,16 @@
+/**
+ * @file DbCommand.cpp
+ * @brief Implementation of database management CLI command.
+ *
+ * Handles database initialization, schema operations,
+ * table listing, template selection, and destructive actions.
+ */
+
+/**
+ * Project Module Imports
+ *
+ * Command definition, database layer, and application metadata.
+ */
 #include "DbCommand.h"
 #include "../../../database/Database.h"
 #include "../../../core/About.h"
@@ -7,6 +20,19 @@
 #include <vector>
 #include <unordered_set>
 
+/**
+ * @brief Executes the database management command.
+ *
+ * Supports:
+ * - Database initialization from templates
+ * - Schema loading from SQL files
+ * - Table listing and inspection
+ * - Table deletion (single or all)
+ * - Interactive template selection
+ *
+ * @param ctx Parsed command-line context.
+ * @return Exit code (0 on success, non-zero on error).
+ */
 int DbCommand::execute(const CommandContext& ctx)
 {
     Database db;

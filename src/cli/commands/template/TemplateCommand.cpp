@@ -1,6 +1,25 @@
+/**
+ * @file TemplateCommand.cpp
+ * @brief Implementation of CLI template management command.
+ *
+ * Provides functionality for listing, adding, removing,
+ * and viewing template files stored in the user application directory.
+ */
+
+/**
+ * Project Module Imports
+ *
+ * Command definition and application metadata constants.
+ */
 #include "TemplateCommand.h"
 #include "../../../core/About.h"
 
+/**
+ * Standard Library Imports
+ *
+ * Console I/O, filesystem operations, file streaming,
+ * environment variables, and container utilities.
+ */
 #include <iostream>
 #include <filesystem>
 #include <fstream>
@@ -10,6 +29,14 @@
 
 namespace fs = std::filesystem;
 
+/**
+ * @brief Resolves the user-specific application data directory.
+ *
+ * Uses OS environment variables (HOME/USERPROFILE) and maps to:
+ * Documents/<AppName>
+ *
+ * @return Base application directory path.
+ */
 static std::filesystem::path getUserDataDir()
 {
 #ifdef _WIN32
@@ -24,6 +51,13 @@ static std::filesystem::path getUserDataDir()
     return base;
 }
 
+/**
+ * @brief Resolves and ensures the template storage directory exists.
+ *
+ * Creates the directory if it does not already exist.
+ *
+ * @return Path to template directory.
+ */
 static fs::path getTemplateDir()
 {
     fs::path dir = getUserDataDir() / "templates";
@@ -31,6 +65,15 @@ static fs::path getTemplateDir()
     return dir;
 }
 
+/**
+ * @brief Searches for a template file by its name (stem match).
+ *
+ * Iterates through available template files and returns
+ * the first match based on filename without extension.
+ *
+ * @param name Template name to search for.
+ * @return Full file path if found, otherwise empty string.
+ */
 static std::string findTemplateFile(const std::string& name)
 {
     for (const auto& entry : fs::directory_iterator(getTemplateDir())) {
@@ -45,6 +88,20 @@ static std::string findTemplateFile(const std::string& name)
     return "";
 }
 
+/**
+ * @brief Executes template management CLI operations.
+ *
+ * Supported operations:
+ * - --list   : List all available templates
+ * - --show   : Open template file in default system application
+ * - --add    : Copy external file into template storage
+ * - --remove : Delete template by name
+ *
+ * Performs strict validation of CLI arguments and options.
+ *
+ * @param ctx Parsed command-line context.
+ * @return Exit code (0 on success, 1 on error).
+ */
 int TemplateCommand::execute(const CommandContext& ctx)
 {
     const std::unordered_set<std::string> allowedOptions = {

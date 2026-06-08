@@ -1,7 +1,24 @@
+/**
+ * @file EmbeddedSql.h
+ * @brief Embedded SQL templates used for database initialization.
+ *
+ * Contains predefined SQL schemas and sample data
+ * that can be loaded without external SQL files.
+ */
 #pragma once
 
+/**
+ * @namespace EmbeddedSql
+ * @brief Collection of embedded SQL schema templates.
+ */
 namespace EmbeddedSql {
 
+/**
+ * Student database template.
+ *
+ * Creates the students table and inserts
+ * demonstration records.
+ */
 inline constexpr const char* students = R"SQL(
 DROP TABLE IF EXISTS students;
 
@@ -27,6 +44,12 @@ VALUES
 ( '...',     '...', '...',      '...',     '...', '...',   '...',        '...'          );
 )SQL";
 
+/**
+ * Teacher database template.
+ *
+ * Creates the teachers table and inserts
+ * demonstration records.
+ */
 inline constexpr const char* teachers = R"SQL(
 DROP TABLE IF EXISTS teachers;
 

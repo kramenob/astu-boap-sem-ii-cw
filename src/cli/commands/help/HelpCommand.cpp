@@ -1,7 +1,26 @@
+/**
+ * @file HelpCommand.cpp
+ * @brief Implementation of CLI help system.
+ *
+ * Displays usage information, available commands,
+ * and argument documentation.
+ */
 #include "HelpCommand.h"
+/**
+ * Project Module Imports
+ *
+ * Application metadata constants used in help output.
+ */
 #include "../../../core/About.h"
 #include <iostream>
-
+/**
+ * @brief Displays CLI usage information and command reference.
+ *
+ * Prints application metadata and full command documentation.
+ *
+ * @param ctx Unused command context.
+ * @return Exit code (always 0).
+ */
 int HelpCommand::execute(const CommandContext&)
 {
 	std::cout

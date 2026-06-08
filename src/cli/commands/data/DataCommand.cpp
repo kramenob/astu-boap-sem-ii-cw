@@ -1,4 +1,17 @@
+/**
+ * @file DataCommand.cpp
+ * @brief Implementation of the CLI command for viewing and inspecting database table data.
+ *
+ * Provides formatted table output, argument validation,
+ * and interactive table selection logic.
+ */
 // Implementation for DataCommand
+
+/**
+ * Project Module Imports
+ *
+ * Core command definition and database access layer.
+ */
 #include "DataCommand.h"
 #include "../../../database/Database.h"
 #include "../../../core/About.h"
@@ -8,7 +21,15 @@
 #include <algorithm>
 #include <unordered_set>
 
-// Helper function to calculate the number of UTF-8 codepoints in a string
+/**
+ * @brief Calculates the number of UTF-8 codepoints in a string.
+ *
+ * Used for correct column width calculation when rendering
+ * table output in CLI (handles multibyte characters properly).
+ *
+ * @param s Input UTF-8 encoded string.
+ * @return Number of Unicode codepoints in the string.
+ */
 static size_t utf8Length(const std::string& s)
 {
     size_t count = 0;
@@ -20,6 +41,18 @@ static size_t utf8Length(const std::string& s)
     return count;
 }
 
+/**
+ * @brief Executes the data inspection command.
+ *
+ * Supports:
+ * - Listing available tables
+ * - Displaying table contents
+ * - Validating CLI arguments
+ * - Rendering formatted table output
+ *
+ * @param ctx Parsed command-line context.
+ * @return Exit code (0 on success, non-zero on error).
+ */
 int DataCommand::execute(const CommandContext& ctx)
 {
     Database db;

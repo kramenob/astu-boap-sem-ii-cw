@@ -1,5 +1,18 @@
+/**
+ * @file GenerateCommand.cpp
+ * @brief Implementation of the GenerateCommand CLI operation.
+ *
+ * Generates output files from database rows using templates.
+ * Supports both text-based templates and DOCX template processing.
+ */
 #include "GenerateCommand.h"
 
+/**
+ * Standard Library Imports
+ *
+ * File I/O, string manipulation, filesystem utilities,
+ * date/time processing, and system interaction.
+ */
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -11,11 +24,24 @@
 #include <ctime>
 #include <cstdlib>
 
+/**
+ * Project Module Imports
+ *
+ * Database access layer and application metadata constants.
+ */
 #include "../../../database/Database.h"
 #include "../../../core/About.h"
 
 namespace fs = std::filesystem;
 
+/**
+ * @brief Returns current system date and time as a formatted string.
+ *
+ * Used for timestamped output directory generation.
+ * Format: YYYY-MM-DD_HH-MM-SS
+ *
+ * @return Formatted date-time string.
+ */
 static std::string getCurrentDateTime()
 {
     auto now = std::chrono::system_clock::now();
@@ -33,6 +59,12 @@ static std::string getCurrentDateTime()
     return oss.str();
 }
 
+/**
+ * @brief Loads entire file content into a string.
+ *
+ * @param path Path to the input file.
+ * @return File content as a string, or empty string on failure.
+ */
 static std::string loadFile(const std::string& path)
 {
     std::ifstream in(path);
@@ -43,7 +75,13 @@ static std::string loadFile(const std::string& path)
     return buffer.str();
 }
 
-
+/**
+ * @brief Resolves user application data directory.
+ *
+ * Typically points to ~/Documents/<AppName>.
+ *
+ * @return Filesystem path to user data directory.
+ */
 static std::filesystem::path getUserDataDir()
 {
 #ifdef _WIN32
@@ -58,6 +96,11 @@ static std::filesystem::path getUserDataDir()
     return base;
 }
 
+/**
+ * @brief Resolves and ensures the template directory exists.
+ *
+ * @return Path to template storage directory.
+ */
 static std::filesystem::path getTemplateDir()
 {
     std::filesystem::path dir = getUserDataDir() / "templates";
@@ -65,6 +108,14 @@ static std::filesystem::path getTemplateDir()
     return dir;
 }
 
+/**
+ * @brief Searches for a template file by name (without extension).
+ *
+ * Iterates through the template directory and matches file stem.
+ *
+ * @param name Template name to search for.
+ * @return Full file path if found, otherwise empty string.
+ */
 static std::string findTemplateFile(const std::string& name)
 {
     for (const auto& entry : std::filesystem::directory_iterator(getTemplateDir())) {
@@ -78,6 +129,14 @@ static std::string findTemplateFile(const std::string& name)
     return "";
 }
 
+/**
+ * @brief Replaces all occurrences of a substring with a value.
+ *
+ * @param str Input string.
+ * @param key Placeholder key to replace.
+ * @param value Replacement value.
+ * @return Modified string with replacements applied.
+ */
 static std::string replaceAll(std::string str,
                               const std::string& key,
                               const std::string& value)
@@ -90,6 +149,19 @@ static std::string replaceAll(std::string str,
     return str;
 }
 
+/**
+ * @brief Executes document generation from database and templates.
+ *
+ * Workflow:
+ * - Parses CLI arguments (--source, --template, --output)
+ * - Loads template file
+ * - Fetches data from database
+ * - Performs placeholder substitution
+ * - Writes output files (TXT/MD or DOCX extraction/repackaging)
+ *
+ * @param ctx Parsed command-line context.
+ * @return Exit code (0 on success, non-zero on failure).
+ */
 int GenerateCommand::execute(const CommandContext& ctx)
 {
     auto sourceIt = ctx.args.find("--source");
