@@ -30,7 +30,7 @@
  * Windows console configuration for UTF-8 support.
  */
 #ifdef _WIN32
-#include <windows.h>
+#include <cstdlib>
 #endif
 
 /**
@@ -99,8 +99,8 @@ CommandContext parse(int argc, char** argv)
 int main(int argc, char** argv)
 {
 #ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
+    // Force UTF-8 console encoding on Windows using system command
+    std::system("chcp 65001 > nul");
 #endif
     CommandRouter router;
 
